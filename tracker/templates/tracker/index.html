@@ -1,0 +1,130 @@
+{% extends "tracker/layout.html" %}
+
+{% block body %}
+<!-- Swiper -->
+<div class=" relative">
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+            {% for drama in list_dramas|slice:":3" %}
+            <div class="swiper-slide"><img src="{{ drama.img_cover}}" class="img_slides relative" alt="" srcset="">
+            </div>
+            {% empty %}
+
+            {% endfor %}
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-pagination"></div>
+    </div>
+</div>
+<div class="list_dramas pb-0">
+    <div>
+        <h1 class="text-2xl font-extrabold tracking-tight text-center sm:text-3xl"> Latest Drama</h1>
+    </div>
+    <div></div>
+</div>
+<div class="list_dramas">
+    <div class="flex justify-center flex-wrap items-center gap-x-32">
+        {% for drama in list_dramas|slice:":6" %}
+        <div class="card my-3 mb-7 drama">
+            <img class="mx-auto md:mb-0 mb-6" src="{{ drama.img_small}}" alt="" srcset="">
+            <div class="card-body">
+                <div class="card-about">
+                    <a href="{% url 'drama' drama.title %}">
+
+                        <p class="card-header">{{ drama.title}}</p>
+                    </a>
+                    <p class="card-episode">{{ drama.total_episode}} Episodes - {{ drama.region}}</p>
+                </div>
+                <div class="card-order-info">
+                    <div>
+                        <p class="card-genre">{{ drama.genre}} ...</p>
+                    </div>
+                    {% if user.is_authenticated %}
+                    {% if request.user.username != drama.username %}
+                    <form action="{% url 'watchlist_drama' drama.id %}" method="post">
+                        {% csrf_token %}
+                        <input style="display:none;" type="text" value="index" name="origin">
+                        {% if drama not in drama_list %}
+                        <div>
+                            <input style="display:none;" type="text" value="add" name="condition">
+                            <button type="submit" class="watch">
+                                <i class='bx bx-plus'></i>
+                            </button>
+                        </div>
+                        {% elif drama in drama_list %}
+                        <div>
+                            <input style="display:none;" type="text" value="remove" name="condition">
+                            <button type="submit" class="watch">
+                                <i class='bx bx-tv'></i>
+                            </button>
+                        </div>
+                        {% endif %}
+                    </form>
+                    {% endif %}
+                    {{else}}
+
+                    {% endif %}
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+            {% if request.user.username != drama.username %}
+            <form action="{% url 'favorite_action' drama.id %}" method="post">
+                {% csrf_token %}
+                <input style="display:none;" type="text" value="index" name="favv">
+                {% if drama not in favorite_drama_list %}
+                <div>
+                    <input style="display:none;" type="text" value="favorite" name="fav">
+                    <button type="submit" class="btn-icon">
+                        <i class='bx bx-heart'></i>
+                    </button>
+                </div>
+                {% elif drama in favorite_drama_list %}
+                <div>
+                    <input style="display:none;" type="text" value="unfavorite" name="fav">
+                    <button type="submit" class="btn-icon">
+                        <i class='bx bxs-heart'></i>
+                    </button>
+                </div>
+                {% endif %}
+            </form>
+            {{else}}
+
+            {% endif %}
+            {{else}}
+
+            {% endif %}
+        </div>
+        {% empty %}
+        <li>No active drama</li>
+
+        {% endfor %}
+    </div>
+    <div class="">
+        <h1 class="text-center text-2xl">Top Upcoming Shows</h1>
+        <div class="mt-6 px-16 pb-8 md:px-2 flex justify-center flex-col mx-auto max-w-lg min-w-lg">
+            {% for upcoming_drama in upcoming_dramas|slice:":4" %}
+            <div class="flex mb-8">
+                <i class='bx bxs-right-arrow nav__icon reverse'></i>
+                <div class="flex flex-col justify-start bg-white rounded-lg border shadow-md">
+                    <img class="object-cover w-full h-32 rounded-t-lg" src="{{upcoming_drama.d_link_img}}" alt="">
+                    <div class="card-body">
+                        <p class="mb-2 text-base font-bold tracking-tight">{{ upcoming_drama.d_title}}
+                        </p>
+                        <p class="mb-3 text-sm font-normal ">{{ upcoming_drama.d_region}},
+                            {{upcoming_drama.d_total_episode}} episodes</p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+
+            {% endfor %}
+        </div>
+    </div>
+    <div class="flex w-full justify-center m-auto">
+        {% url 'category' as url %}
+        <a href="{% url 'category' %}"
+            class="{% if request.path == url or request.path == cat %} active {% endif %} inline-flex button-color items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">More</a>
+    </div>
+</div>
+{% endblock %}

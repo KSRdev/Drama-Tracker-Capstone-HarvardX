@@ -1,0 +1,112 @@
+{% extends "tracker/layout.html" %}
+
+{% block body %}
+
+<div class=" pb-4">
+    <div>
+        <h1 class="text-2xl font-extrabold tracking-tight text-center sm:text-3xl"> Favorite</h1>
+    </div>
+    <div></div>
+</div>
+<div class="">
+    <div class="flex justify-center flex-wrap items-center gap-x-32">
+        {% for drama in favorite_lists %}
+        <div class="card my-3 mb-7">
+            <img class="mx-auto md:mb-0 mb-6" src="{{ drama.favdrama.img_small}}" alt="" srcset="">
+            <div class="card-body">
+                <div class="card-about">
+                    <a href="{% url 'drama' drama.favdrama.title %}">
+
+                        <p class="card-header">{{ drama.favdrama.title}}</p>
+                    </a>
+                    <p class="card-episode">{{ drama.favdrama.total_episode}} Episodes - {{ drama.favdrama.region}}</p>
+                </div>
+                <div class="card-order-info">
+                    <div>
+                        <p class="card-genre">{{ drama.favdrama.genre}} ...</p>
+                    </div>
+                    {% if user.is_authenticated %}
+                    {% if request.user.username != drama.username %}
+                    <form action="{% url 'watchlist_drama' drama.id %}" method="post">
+                        {% csrf_token %}
+                        <input style="display:none;" type="text" value="watchlist" name="origin">
+                        {% if drama not in drama_list %}
+                        <div>
+                            <input style="display:none;" type="text" value="add" name="condition">
+                            <button type="submit" class="watch">
+                                <i class='bx bx-plus'></i>
+                            </button>
+                        </div>
+                        {% elif drama in drama_list %}
+                        <div>
+                            <input style="display:none;" type="text" value="remove" name="condition">
+                            <button type="submit" class="watch">
+                                <i class='bx bx-tv'></i>
+                            </button>
+                        </div>
+                        {% endif %}
+                    </form>
+                    {% endif %}
+                    {{else}}
+
+                    {% endif %}
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+
+            <form action="{% url 'favorite_action' drama.favdrama.id %}" method="post">
+                {% csrf_token %}
+
+                <div>
+                    <input style="display:none;" type="text" value="favorite" name="favv">
+                    <input style="display:none;" type="text" value="unfavorite" name="fav">
+                    <button type="submit" class="btn-icon">
+                        <i class='bx bxs-heart'></i>
+                    </button>
+                </div>
+
+            </form>
+
+            {{else}}
+
+            {% endif %}
+        </div>
+        {% empty %}
+        <li>No active drama</li>
+
+        {% endfor %}
+    </div>
+</div>
+<div class="flex justify-center content-center mb-9 ">
+    {% if favorite_lists.has_previous %}
+    <a href="?page={{ favorite_lists.previous_page_number }}"
+        class=" px-4 py-2 mx-1 capitalize rounded-md btn-paginator">
+        <div class="flex items-center -mx-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-1 rtl:-scale-x-100" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+            </svg>
+
+            <span class="mx-1">
+                previous
+            </span>
+        </div>
+    </a>
+    {% endif %}
+    {% if favorite_lists.has_next %}
+    <a href="?page={{ favorite_lists.next_page_number }}"
+        class="px-4 py-2 mx-1 transition-colors duration-300 transform rounded-md btn-paginator">
+        <div class="flex items-center -mx-1">
+            <span class="mx-1">
+                Next
+            </span>
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-1 rtl:-scale-x-100" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+        </div>
+    </a>
+    {% endif %}
+</div>
+{% endblock %}

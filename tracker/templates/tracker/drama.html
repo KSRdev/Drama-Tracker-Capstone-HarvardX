@@ -1,0 +1,354 @@
+{% extends "tracker/layout.html" %}
+
+{% block body %}
+
+
+<div class="bg-white mb-9 rounded-md">
+    <div aria-hidden="true" class="relative rounded-md">
+        <img src="{{ drama.img_cover}}" alt="" class="w-full h-96 object-center rounded-md object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-white"></div>
+    </div>
+
+    <div class="relative rounded-md-mt-12 mx-auto max-w-7xl pb-16 px-4 sm:pb-24 sm:px-6 lg:px-8">
+        <div class="max-w-2xl text-center lg:max-w-4xl">
+            <p class="mt-4 text-gray-500 "></p>
+        </div>
+
+        <div class="rounded-md">
+            <div class="pt-6">
+
+                <!-- Drama info -->
+                <div
+                    class="max-w-2xl pt-10 pb-16 px-4 sm:px-6 lg:max-w-7xl lg:pt-16 lg:pb-24 lg:px-8 lg:grid lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8">
+                    <div class="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
+                        <div class="card-order-info">
+                            <div>
+                                <h1 class="text-2xl font-extrabold tracking-tight  sm:text-3xl"> {{drama.title}}</h1>
+                            </div>
+                            {% if user.is_authenticated %}
+                            {% if request.user.username != drama.username %}
+                            <div class="flex justify-center items-center px-5 gap-4">
+                                <div>
+                                    <form action="{% url 'watchlist_drama' drama.id %}" method="post">
+                                        {% csrf_token %}
+                                        <input style="display:none;" type="text" value="drama" name="origin">
+                                        {% if drama not in drama_list %}
+                                        <div>
+                                            <input style="display:none;" type="text" value="add" name="condition">
+                                            <button type="submit" class="watch">
+                                                <i class='bx bx-plus'></i>
+                                            </button>
+                                        </div>
+                                        {% elif drama in drama_list %}
+                                        <div>
+                                            <input style="display:none;" type="text" value="remove" name="condition">
+                                            <button type="submit" class="watch">
+                                                <i class='bx bx-tv'></i>
+                                            </button>
+                                        </div>
+                                        {% endif %}
+                                    </form>
+                                </div>
+
+                                <div>
+                                    <form action="{% url 'favorite_action' drama.id %}" method="post">
+                                        {% csrf_token %}
+                                        <input style="display:none;" type="text" value="drama" name="favv">
+                                        {% if drama not in favorite_drama_list %}
+                                        <div>
+                                            <input style="display:none;" type="text" value="favorite" name="fav">
+                                            <button type="submit" class="">
+                                                <i class='bx bx-heart red text-xl'></i>
+                                            </button>
+                                        </div>
+                                        {% elif drama in favorite_drama_list %}
+                                        <div>
+                                            <input style="display:none;" type="text" value="unfavorite" name="fav">
+                                            <button type="submit" class="">
+                                                <i class='bx bxs-heart red text-xl'></i>
+                                            </button>
+                                        </div>
+                                        {% endif %}
+                                    </form>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {{else}}
+
+                            {% endif %}
+                        </div>
+                    </div>
+
+
+
+                    <div class="mt-4 lg:mt-0 lg:row-span-3">
+                        <h2 class="sr-only">Product information</h2>
+
+
+                        <div class="mt-6">
+                            <h3 class="mb-4 text-xl">Trailer</h3>
+                            <iframe class="video rounded-md" width="100%" height="1139" src="{{drama.link_trailer}}"
+                                title="{{ drama.title}}" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                            <div class="mt-10">
+                                <h3 class="text-md font-medium ">Info</h3>
+
+                                <div class="mt-4">
+                                    <ul role="list" class="pl-4 list-disc text-sm space-y-2">
+                                        <li class=""><span class="">{{ drama.region}}</span>
+                                        </li>
+
+                                        <li class=""><span class="">{{ drama.year}}</span>
+                                        </li>
+
+                                        <li class=""><span class="">{{drama.total_episode}} Episodes</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="py-10 lg:pt-6 lg:pb-16 lg:col-start-1 lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
+                        <!-- Description and details -->
+                        <div>
+                            <h2 class="text-xl">Description</h2>
+
+                            <div class="space-y-6 mt-4">
+                                <p class="text-base ">{{ drama.description}}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-10">
+                            <h2 class="text-md font-medium ">Genre</h2>
+
+                            <div class="mt-4 flex-wrap gap-10 flex ">
+                                {% for category in categories %}
+                                <div class="text-sm">{{ category.category}}
+                                </div>
+                                {% empty %}
+                                <p>No Genre</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="mt-10">
+                            <h3 class="text-md font-medium ">Actors</h3>
+
+                            <div class="mt-4">
+                                <div class="max-w-7xl mx-auto pb-12 pr-4 text-center sm:pr-6 lg:pr-8 lg:pb-24">
+                                    <ul role="list"
+                                        class="mx-auto grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-4 md:gap-x-6 lg:max-w-5xl lg:gap-x-8 lg:gap-y-12 xl:grid-cols-6">
+                                        {% for actor in actors %}
+                                        <li>
+                                            <div class="space-y-4">
+                                                <img class="mx-auto h-20 w-20 rounded-full object-cover "
+                                                    src="{{ actor.profile }}" alt="">
+                                                <div class="space-y-2">
+                                                    <div class="text-xs font-medium lg:text-sm">
+                                                        <h3>{{ actor.first }} {{ actor.middle }} {{ actor.last }}</h3>
+                                                        <p class="text-orange-400">{{ actor.role }} role</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        {% empty %}
+                                        <p>No Actors</p>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% if user.is_authenticated %}
+                        <div class="flex items-start space-x-4">
+                            <div class="min-w-0 flex-1">
+
+                                <form action="{% url 'review' title %}" class="relative" method="post">
+                                    {% csrf_token %}
+                                    <div class="border border-gray-300 rounded-lg  overflow-hidden">
+                                        <label for="review" class="sr-only">Add your comment</label>
+                                        <textarea rows="3" name="review" id="review" required
+                                            class="block w-full p-3 border-0 resize-none sm:text-sm mb-12 focus:outline-none"
+                                            placeholder="Add your comment..."></textarea>
+                                    </div>
+
+                                    <div class="absolute bottom-0 inset-x-0 pl-3 pr-2 py-2 flex justify-between">
+                                        <div class="flex items-center space-x-5">
+                                            <div class="flex items-center justify-center w-full gap-2">
+                                                <select id="underline_select" name="rating"
+                                                    class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent appearance-none focus:outline-none">
+                                                    <option selected disabled>Choose a Rating</option>
+                                                    <option name="1" value="1">1</option>
+                                                    <option name="2" value="2">2</option>
+                                                    <option name="3" value="3">3</option>
+                                                    <option name="4" value="4">4</option>
+                                                    <option name="5" value="5">5</option>
+                                                </select>
+                                                <i class='bx bxs-down-arrow'></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <button type="submit"
+                                                class="inline-flex button-color items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Post</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                        {{else}}
+
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <!-- Options -->
+            <div class="mt-4 lg:mt-0 lg:row-span-3">
+                <h2 class="sr-only">Product information</h2>
+                <div class="mt-6">
+                    <h3 class="sr-only">Reviews</h3>
+                    <div class="flex items-center">
+                        <div class="flex items-center">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="-my-10 px-8">
+            <div>
+                <h1 class="text-xl font-extrabold tracking-tight sm:text-xl mb-4">Comment & Reviews </h1>
+            </div>
+            {% for review in reviews %}
+            <div class="flex text-sm text-gray-500 border-t border-gray-200 space-x-4">
+                <div class="flex-1 py-5">
+                    {% if review.username == request.user.username %}
+                    <h3 class="font-medium text-gray-900">You</h3>
+                    {% else %}
+                    <h3 class="font-medium text-gray-900">{{ review.username }}</h3>
+                    {% endif %}
+                    <div class="flex items-center justify-between">
+                        <p><time>{{ review.r_date }}</time></p>
+                        {% if user.is_authenticated %}
+                        {% if review.username == request.user.username %}
+                        <form action="{% url 'd_review' title review.id %}" method="post">
+                            {% csrf_token %}
+                            <div>
+                                <button type="submit"
+                                    class="w-full button-color flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Delete</button>
+                            </div>
+                        </form>
+                        {% else %}
+                        {% endif %}
+                        {% else %}
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center mt-4">
+                        {% if review.ratings == 1 %}
+                        <!-- Heroicon name: solid/star -->
+                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        {% elif review.ratings == 2 %}
+                        <!-- Heroicon name: solid/star -->
+                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        {% elif review.ratings == 3 %}
+                        <!-- Heroicon name: solid/star -->
+                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        {% elif review.ratings == 4 %}
+                        <!-- Heroicon name: solid/star -->
+                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        {% elif review.ratings == 5 %}
+                        <!-- Heroicon name: solid/star -->
+                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        {{else}}
+
+                        {% endif %}
+                    </div>
+                    <p class="sr-only">5 out of 5 stars</p>
+
+                    <div class="mt-4 prose prose-sm max-w-none text-gray-500">
+                        <p>{{ review.review }}</p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p>No Reviews</p>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}

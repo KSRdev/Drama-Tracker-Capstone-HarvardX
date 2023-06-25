@@ -1,0 +1,196 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'tracker/styles.css' %}">
+    <!--========== BOX ICONS ==========-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+    <!--========== SWIPER ==========-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{% static 'tracker/app.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js" defer></script>
+    <title>Drama Tracker</title>
+</head>
+
+<body>
+    <!--========== HEADER ==========-->
+    <header class="header">
+        <div class="header__container">
+
+            <div class="header__img"></div>
+
+            <a href="{% url 'index' %}" class="header__logo"><img src="{% static 'tracker/asset/dramatracker.png' %}"
+                    alt="" class="logo"></a>
+
+            <div class="header__search">
+                <input type="search" placeholder="Search" class="header__input" id="searchbar" onkeyup="search_drama()">
+                <i class='bx bx-search header__icon'></i>
+            </div>
+
+            <div class="header__toggle">
+                <i class='bx bx-menu' id="header-toggle"></i>
+            </div>
+        </div>
+    </header>
+
+    <!--========== NAV ==========-->
+    <div class="nav" id="navbar">
+        <nav class="nav__container">
+            <div>
+                <a href="{% url 'index' %}" class="nav__link nav__logo">
+                    <i class='bx bxs-right-arrow nav__icon reverse'></i>
+                    <span class="nav__logo-name">Drama</span>
+                </a>
+
+                <div class="nav__list">
+
+                    <div class="nav__items">
+                        {% url 'index' as url %}
+                        <a href="{% url 'index' %}" class="nav__link {% if request.path == url %} active {% endif %}">
+                            <i class='bx bx-compass nav__icon'></i>
+                            <span class="nav__name">Explore</span>
+                        </a>
+                        {% url 'choose_category' as cat %}
+                        {% url 'category' as url %}
+                        <a href="{% url 'category' %}"
+                            class="nav__link {% if request.path == url or request.path == cat %} active {% endif %}">
+                            <i class='bx bx-category nav__icon'></i>
+                            <span class="nav__name">Categories</span>
+                        </a>
+                    </div>
+                    <div class="nav__items">
+                        {% if user.is_authenticated %}
+                        <h3 class="nav__subtitle">Profile</h3>
+                        {% url 'watchlist' as url %}
+                        <a href="{% url 'watchlist' %}"
+                            class="nav__link {% if request.path == url  %} active {% endif %}">
+                            <i class='bx bx-tv nav__icon'></i>
+                            <span class="nav__name">Watchlist</span>
+                        </a>
+                        {% url 'favorite' as url %}
+                        <a href="{% url 'favorite' %}"
+                            class="nav__link {% if request.path == url  %} active {% endif %}">
+                            <i class='bx bx-heart nav__icon'></i>
+                            <span class="nav__name">Liked</span>
+                        </a>
+                        {% url 'profile' user.username as url %}
+                        <a href="{% url 'profile' user.username %}"
+                            class="nav__link {% if request.path == url  %} active {% endif %}">
+                            <i class='bx bx-cog nav__icon'></i>
+                            <span class="nav__name">Profile</span>
+                        </a>
+                        {% else %}
+                        {% url 'login' as url %}
+                        <a href="{% url 'login' %}" class="nav__link {% if request.path == url %} active {% endif %}">
+                            <i class='bx bx-user nav__icon'></i>
+                            <span class="nav__name">Login</span>
+                        </a>
+                        {% url 'register' as url %}
+                        <a href="{% url 'register' %}"
+                            class="nav__link {% if request.path == url %} active {% endif %}">
+                            <i class='bx bx-user-plus nav__icon'></i>
+                            <span class="nav__name">Register</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% url 'logout' %}" class="nav__link nav__logout">
+                <i class='bx bx-log-out nav__icon'></i>
+                <span class="nav__name">Log Out</span>
+            </a>
+        </nav>
+    </div>
+
+
+
+    <div class="container mx-auto mt-16">
+        {% block body %}
+        {% endblock %}
+    </div>
+
+
+    <footer aria-labelledby="footer-heading">
+        <hr>
+        <h2 id="footer-heading" class="sr-only">Footer</h2>
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
+            <div class="grid gap-8 justify-items-center">
+                <div class="space-y-8 xl:col-span-1">
+                    <img class="h-10" src="{% static 'tracker/asset/dramatracker.png' %}" alt="Company name">
+                    <!-- <div class="flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-gray-500">
+                            <span class="sr-only">Facebook</span>
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </div> -->
+                </div>
+                <!-- <div class="mt-12 grid grid-cols-2 gap-8 xl:mt-0 xl:col-span-2">
+                    <div class="md:grid md:grid-cols-2 md:gap-8">
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Solutions</h3>
+                            <ul role="list" class="mt-4 space-y-4">
+                                <li>
+                                    <a href="#" class="text-base text-gray-500 hover:text-gray-900"> Marketing </a>
+                                </li>
+
+                                <li>
+                                    <a href="#" class="text-base text-gray-500 hover:text-gray-900"> Analytics </a>
+                                </li>
+
+                                <li>
+                                    <a href="#" class="text-base text-gray-500 hover:text-gray-900"> Commerce </a>
+                                </li>
+
+                                <li>
+                                    <a href="#" class="text-base text-gray-500 hover:text-gray-900"> Insights </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="md:grid md:grid-cols-2 md:gap-8">
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Company</h3>
+                            <ul role="list" class="mt-4 space-y-4">
+                                <li>
+                                    <a href="#" class="text-base text-gray-500 hover:text-gray-900"> About </a>
+                                </li>
+
+                                <li>
+                                    <a href="#" class="text-base text-gray-500 hover:text-gray-900"> Blog </a>
+                                </li>
+
+                                <li>
+                                    <a href="#" class="text-base text-gray-500 hover:text-gray-900"> Jobs </a>
+                                </li>
+
+                                <li>
+                                    <a href="#" class="text-base text-gray-500 hover:text-gray-900"> Press </a>
+                                </li>
+
+                                <li>
+                                    <a href="#" class="text-base text-gray-500 hover:text-gray-900"> Partners </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+            <div class=" pt-8">
+                <p class="text-base text-gray-400 xl:text-center">&copy; 2020 Workflow, Inc. All rights reserved.
+                </p>
+            </div>
+    </footer>
+</body>
+
+</html>
